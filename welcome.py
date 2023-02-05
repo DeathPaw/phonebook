@@ -1,13 +1,15 @@
-import sqlite3
 import datetime
-from PyQt5.QtCore import QRect, Qt, QCoreApplication, QMetaObject, pyqtSlot
+import sqlite3
+
+from PyQt5.QtCore import QRect, QCoreApplication, pyqtSlot
 from PyQt5.QtGui import QFont
-from PyQt5.QtSql import QSqlQuery
 from PyQt5.QtWidgets import *
+
 import login
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+
+class UiMainWindow(object):
+    def setup_ui(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 800)
         self.centralwidget = QWidget(MainWindow)
@@ -17,7 +19,7 @@ class Ui_MainWindow(object):
         font = QFont()
         font.setPointSize(18)
         self.label.setFont(font)
-        #self.label.setAlignment(Qt.AlignCenter)
+        # self.label.setAlignment(Qt.AlignCenter)
         self.label.setObjectName("label")
 
         self.label_2 = QLabel(self.centralwidget)
@@ -25,7 +27,7 @@ class Ui_MainWindow(object):
         font = QFont()
         font.setPointSize(18)
         self.label_2.setFont(font)
-      #  self.label_2.setAlignment(Qt.AlignCenter)
+        #  self.label_2.setAlignment(Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
 
         self.button_1 = QPushButton(self.centralwidget)
@@ -115,18 +117,17 @@ class Ui_MainWindow(object):
         self.phone_lineEdit.setGeometry(QRect(40, 740, 150, 20))
         self.phone_lineEdit.setObjectName("phone")
 
-
         self.listWidget = QListWidget(self.centralwidget)
         self.listWidget.setGeometry(QRect(580, 630, 200, 300))
         self.listWidget.setObjectName("listWidget")
-        #item = QListWidgetItem()
-        #self.listWidget.addItem(item)
+        # item = QListWidgetItem()
+        # self.listWidget.addItem(item)
 
         MainWindow.setCentralWidget(self.centralwidget)
-        self.retranslateUi(MainWindow)
-        #QMetaObject.connectSlotsByName(self.listWidget)
+        self.retranslate_ui(MainWindow)
+        # QMetaObject.connectSlotsByName(self.listWidget)
 
-    def retranslateUi(self, MainWindow):
+    def retranslate_ui(self, MainWindow):
         _translate = QCoreApplication.translate
         self.loginDatabase = LoginDatabase('phone.db')
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -134,7 +135,7 @@ class Ui_MainWindow(object):
         self.birthsday_lineEdit.setText(_translate("MainWindow", "date"))
         self.phone_lineEdit.setText(_translate("MainWindow", "phone"))
         self.id_lineEdit.setText(_translate("MainWindow", "1"))
-        #self.label(_translate("MainWindow", "date"))
+        # self.label(_translate("MainWindow", "date"))
         self.button_1.setText(_translate("MainWindow", "a-e"))
         self.button_2.setText(_translate("MainWindow", "f-h"))
         self.button_3.setText(_translate("MainWindow", "i-k"))
@@ -147,17 +148,24 @@ class Ui_MainWindow(object):
         self.button_update.setText(_translate("MainWindow", "update"))
         if self.loginDatabase.is_table('CONTACTBOOK'):
             pass
-            #print(self.loginDatabase.conn.execute("select * from CONTACTS").fetchall())
+            # print(self.loginDatabase.conn.execute("select * from CONTACTS").fetchall())
         else:
-            self.loginDatabase.conn.execute("CREATE TABLE CONTACTBOOK(CONTACTID INTEGER PRIMARY KEY AUTOINCREMENT, CONTACT TEXT NOT NULL, PHONE TEXT, BIRTHSDAY date)")
-            self.loginDatabase.conn.execute("INSERT INTO CONTACTBOOK (CONTACT, PHONE, BIRTHSDAY) VALUES ('FRIEND', '82727326116', '2019-05-21')")
-            self.loginDatabase.conn.execute("INSERT INTO CONTACTBOOK (CONTACT, PHONE, BIRTHSDAY) VALUES ('FRIEND2', '82727326116', '2019-05-21')")
+            self.loginDatabase.conn.execute(
+                "CREATE TABLE CONTACTBOOK(CONTACTID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "CONTACT TEXT NOT NULL, PHONE TEXT, BIRTHSDAY date)")
+            self.loginDatabase.conn.execute(
+                "INSERT INTO CONTACTBOOK (CONTACT, PHONE, BIRTHSDAY) "
+                "VALUES ('FRIEND', '82727326116', '2019-05-21')")
+            self.loginDatabase.conn.execute(
+                "INSERT INTO CONTACTBOOK (CONTACT, PHONE, BIRTHSDAY) "
+                "VALUES ('FRIEND2', '82727326116', '2019-05-21')")
             self.loginDatabase.conn.commit()
-        item = self.loginDatabase.conn.execute("SELECT * FROM CONTACTBOOK "#where (strftime('%d-%m', BIRTHSDAY) between strftime('%d-%m', date('now')) and strftime('%d-md', date('now', '+13 day'))")
-                                              "WHERE strftime('%m-%d', BIRTHSDAY) between "
-                                              "strftime('%m-%d', 'now', '+1 day')"
-                                              "and strftime('%m-%d', 'now', '+8 day')").fetchall()
-        #item = self.loginDatabase.conn.execute("select * from CONTACTBOOK").fetchall()
+        item = self.loginDatabase.conn.execute(
+            "SELECT * FROM CONTACTBOOK "  
+            "WHERE strftime('%m-%d', BIRTHSDAY) between "
+            "strftime('%m-%d', 'now', '+1 day')"
+            "and strftime('%m-%d', 'now', '+8 day')").fetchall()
+        # item = self.loginDatabase.conn.execute("select * from CONTACTBOOK").fetchall()
         self.listWidget.addItem('ПОМНИТЕ У ЭТИХ ЛЮДЕЙ СКОРО ДЕНЬ РОЖДЕНИЯ')
         for i in item:
             self.listWidget.addItem(str(i))
@@ -166,9 +174,9 @@ class Ui_MainWindow(object):
         try:
             datetime.date.fromisoformat(birthsday_to_add)
             res = self.loginDatabase.conn.execute("select * from contactbook where contact = ? "
-                                                 "and phone = ? and birthsday = ?",
-                                            (name_to_add, phone_to_add, birthsday_to_add)).fetchall()
-            #print(res)
+                                                  "and phone = ? and birthsday = ?",
+                                                  (name_to_add, phone_to_add, birthsday_to_add)).fetchall()
+            # print(res)
             if not res:
                 self.loginDatabase.conn.execute("INSERT INTO CONTACTBOOK (CONTACT, PHONE, BIRTHSDAY) VALUES (?, ?, ?)",
                                                 (name_to_add, phone_to_add, birthsday_to_add))
@@ -178,14 +186,13 @@ class Ui_MainWindow(object):
         except ValueError:
             msg = QMessageBox.information(self, 'Внимание!', 'Некорректная дата.')
             return
-            raise ValueError("Incorrect data format, should be YYYY-MM-DD")
 
     def validContactUpdate(self, name_to_update, phone_to_update, birthsday_to_update, id_to_update):
         try:
             datetime.date.fromisoformat(birthsday_to_update)
             res = self.loginDatabase.conn.execute("select * from contactbook where contact = ? "
                                                   "and phone = ? and birthsday = ?",
-                                                  (name_to_update,phone_to_update, birthsday_to_update))\
+                                                  (name_to_update, phone_to_update, birthsday_to_update)) \
                 .fetchall()
             # print(res)
             if not res:
@@ -198,7 +205,6 @@ class Ui_MainWindow(object):
         except ValueError:
             msg = QMessageBox.information(self, 'Внимание!', 'Некорректная дата.')
             return
-            raise ValueError("Incorrect data format, should be YYYY-MM-DD")
 
     @pyqtSlot()
     def on_click1(self):
@@ -211,12 +217,10 @@ class Ui_MainWindow(object):
 
         for i in item:
             self.listWidget.addItem(str(i))
-        #res = self.loginDatabase.conn.execute("SELECT * FROM CONTACTBOOK "#where (strftime('%d-%m', BIRTHSDAY) between strftime('%d-%m', date('now')) and strftime('%d-md', date('now', '+13 day'))")
-        #                                      "WHERE strftime('%m-%d', BIRTHSDAY) between "
-        #                                      "strftime('%m-%d', 'now', '+1 day')"
-        #                                      "and strftime('%m-%d', 'now', '+8 day')").fetchall()
-        #print(res)
-
+        # res = self.loginDatabase.conn.execute("SELECT * FROM CONTACTBOOK "#where (strftime('%d-%m', BIRTHSDAY)
+        # between strftime('%d-%m', date('now')) and strftime('%d-md', date('now', '+13 day'))") "WHERE strftime(
+        # '%m-%d', BIRTHSDAY) between " "strftime('%m-%d', 'now', '+1 day')" "and strftime('%m-%d', 'now',
+        # '+8 day')").fetchall() print(res)
 
     @pyqtSlot()
     def on_click2(self):
@@ -250,6 +254,7 @@ class Ui_MainWindow(object):
                                                ).fetchall()
         for i in item:
             self.listWidget.addItem(str(i))
+
     @pyqtSlot()
     def on_click5(self):
         print('PyQt5 button click')
@@ -273,7 +278,6 @@ class Ui_MainWindow(object):
         for i in item:
             self.listWidget.addItem(str(i))
 
-
     @pyqtSlot()
     def on_click_add(self):
 
@@ -292,22 +296,21 @@ class Ui_MainWindow(object):
         birthsday_to_update = self.birthsday_lineEdit.text()
         id_to_update = self.id_lineEdit.text()
         self.validContactUpdate(name_to_update, phone_to_update, birthsday_to_update, id_to_update)
-        print(id_to_update+name_to_update+phone_to_update+birthsday_to_update)
-        #self.loginDatabase.conn.execute("UPDATE ")
-
+        print(id_to_update + name_to_update + phone_to_update + birthsday_to_update)
+        # self.loginDatabase.conn.execute("UPDATE ")
 
     @pyqtSlot()
     def on_click_delete(self):
 
         print('delete contact request')
-        #name_to_update = self.contact_lineEdit.text()
-        #phone_to_update = self.phone_lineEdit.text()
-        #birthsday_to_update = self.birthsday_lineEdit.text()
+        # name_to_update = self.contact_lineEdit.text()
+        # phone_to_update = self.phone_lineEdit.text()
+        # birthsday_to_update = self.birthsday_lineEdit.text()
         id_to_delete = self.id_lineEdit.text()
         print(id_to_delete)
-        #self.loginDatabase.conn.execute("UPDATE ")
+        # self.loginDatabase.conn.execute("UPDATE ")
         self.loginDatabase.conn.execute("DELETE FROM CONTACTBOOK WHERE CONTACTID = ?",
-                                        (id_to_delete))
+                                        id_to_delete)
         self.loginDatabase.conn.commit()
 
     @pyqtSlot()
@@ -315,25 +318,23 @@ class Ui_MainWindow(object):
         self.loginDatabase.conn.execute(
             "UPDATE DEFAULTUSER SET USERNAME = 'UNLOG', PASSWORD = 'UNLOG'")
         self.loginDatabase.conn.commit()
-        self.close()
+        self.hide()
         self.loginDatabase.conn.close()
         self.mainWindow = login.MainDialog()
         self.mainWindow.show()
 
 
-
-
-class MainWindow(QMainWindow, Ui_MainWindow):
+class MainWindow(QMainWindow, UiMainWindow):
 
     def __init__(self, name='admin'):
         super().__init__()
-        self.setupUi(self)
+        self.setup_ui(self)
         self.loginDatabase = LoginDatabase('phone.db')
-        #print(self.loginDatabase.is_table("CONTACTS"))
+        # print(self.loginDatabase.is_table("CONTACTS"))
 
-        #self.label.setText('{} {}'.format(self.label.text(), name))
-        #NAME CAN BE USED
-        #print(name)
+        # self.label.setText('{} {}'.format(self.label.text(), name))
+        # NAME CAN BE USED
+        # print(name)
         self.button_1.clicked.connect(self.on_click1)
         self.button_2.clicked.connect(self.on_click2)
         self.button_3.clicked.connect(self.on_click3)
@@ -346,15 +347,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.button_delete.clicked.connect(self.on_click_delete)
 
         self.button_unlog.clicked.connect(self.on_click_unlog)
-        #self.button_1.pressed(print("asd"))
+        # self.button_1.pressed(print("asd"))
         gridLayout = QGridLayout(self.centralwidget)
         gridLayout.addWidget(self.listWidget)
         gridLayout.addWidget(self.label)
         gridLayout.addWidget(self.label_2)
-        #self.button_2.clicked.connect(self.listWidget.clear())
+        # self.button_2.clicked.connect(self.listWidget.clear())
 
 
-class LoginDatabase():
+class LoginDatabase:
     def __init__(self, dbname):
         self.dbname = dbname
         self.conn = sqlite3.connect(dbname)
@@ -363,7 +364,7 @@ class LoginDatabase():
         query = "SELECT name from sqlite_master WHERE type='table' AND name='{}';".format(table_name)
         cursor = self.conn.execute(query)
         result = cursor.fetchone()
-        if result == None:
+        if result is None:
             return False
         else:
             return True
@@ -371,6 +372,7 @@ class LoginDatabase():
 
 if __name__ == "__main__":
     import sys
+
     app = QApplication(sys.argv)
     w = MainWindow()
     w.show()
